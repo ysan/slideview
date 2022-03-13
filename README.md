@@ -1,6 +1,6 @@
-# Slide view
+# Slide View
 
-シンプルな画像サムネイル+スライドショーです。
+シンプルな画像サムネイル+スライドショーです。(今はローカルファイルのみ対応)
 
 React の勉強のためライブラリ等は使わず素の class component で実装しています。
 
@@ -18,10 +18,10 @@ React の勉強のためライブラリ等は使わず素の class component で
 
 ## Starting React App
 
-    git clone https://github.com/ysan/slideview.git
-    cd slideview
-    npm install
-    npm start
+    $ git clone https://github.com/ysan/slideview.git
+    $ cd slideview
+    $ npm install
+    $ npm start
 
 ## etc
 
