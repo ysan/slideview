@@ -23,11 +23,10 @@ React の勉強のためライブラリ等は使わず素の class component で
     $ npm install
     $ npm start
 
-## etc
+## others
 
-- 各ブラウザでの動きを確認したい。(現状 chrome のみ)
 - レスポンシブ対応したい。
-- hooks も試したい。
-- Redux も試したい。
+- hooks 試したい。
+- Redux 試したい。
 - styled-components も試したい。
 - Pinterest 連携してみたい。

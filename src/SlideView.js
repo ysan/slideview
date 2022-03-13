@@ -15,11 +15,11 @@ export class Main extends React.Component {
     const _file = {
       dataurl: dataurl,
       info: {
-        path: file.webkitRelativePath,
+        //path: file.webkitRelativePath,
         name: file.name,
         type: file.type,
         size: file.size,
-        lastModifiedDate: file.lastModifiedDate.toString(),
+        lastModified: file.lastModified,
       },
     };
     const newFiles = this.state.files;
@@ -61,11 +61,11 @@ class DirectorySelector extends React.Component {
     return (e) => {
       // for each file callback
       console.log(
-        file.webkitRelativePath,
+        //file.webkitRelativePath,
         file.name,
         file.type,
         file.size,
-        file.lastModifiedDate
+        file.lastModified
       );
       this.props.handleLoadFile(e.target.result, file);
     };
@@ -436,12 +436,23 @@ class ModalViewerPanel extends React.Component {
       const file = this.props.files[this.props.index];
       table = Object.keys(file.info).map((key) => {
         const list = [];
-        list.push(
-          <tr>
-            <td>{key}</td>
-            <td>{file.info[key]}</td>
-          </tr>
-        );
+        if (key === 'lastModified') {
+          const d = new Date(file.info[key]);
+          const value = d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
+          list.push(
+            <tr>
+              <td>{key}</td>
+              <td>{value}</td>
+            </tr>
+          );
+        } else {
+          list.push(
+            <tr>
+              <td>{key}</td>
+              <td>{file.info[key]}</td>
+            </tr>
+          );
+        }
         return list;
       });
 
