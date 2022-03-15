@@ -168,6 +168,7 @@ class ModalViewer extends React.Component {
 
     this.state = {
       imageIndex: 0,
+      active: 0, // 1 or 2 - imageRef_1 or imageRef_2
       playButton: 'Play',
       currentXY: { x: 0, y: 0 },
     };
@@ -180,7 +181,6 @@ class ModalViewer extends React.Component {
     this.imageRef_1 = React.createRef();
     this.imageRef_2 = React.createRef();
 
-    this.active = 0; // 1 or 2 - imageRef_1 or imageRef_2
     this.playInterval = null;
     this.playIntervalOptions = [
       { value: 1, text: '1sec' },
@@ -222,14 +222,14 @@ class ModalViewer extends React.Component {
 
     // call child functions
     // switch
-    if (this.active === 0 || this.active === 2) {
+    if (this.state.active === 0 || this.state.active === 2) {
       this.imageRef_1.current.show(dataurl);
       this.imageRef_2.current.show();
-      this.active = 1;
+      this.setState({ active: 1 });
     } else if (this.state.active === 1) {
       this.imageRef_1.current.show();
       this.imageRef_2.current.show(dataurl);
-      this.active = 2;
+      this.setState({ active: 2 });
     }
   };
 
@@ -259,14 +259,14 @@ class ModalViewer extends React.Component {
 
     // call child functions
     // switch
-    if (this.active === 1) {
+    if (this.state.active === 1) {
       this.imageRef_1.current.slideoutLeft();
       this.imageRef_2.current.slideinRight(dataurl);
-      this.active = 2;
+      this.setState({ active: 2 });
     } else {
       this.imageRef_1.current.slideinRight(dataurl);
       this.imageRef_2.current.slideoutLeft();
-      this.active = 1;
+      this.setState({ active: 1 });
     }
   };
 
@@ -282,14 +282,14 @@ class ModalViewer extends React.Component {
 
     // call child functions
     // switch
-    if (this.active === 1) {
+    if (this.state.active === 1) {
       this.imageRef_1.current.slideoutRight();
       this.imageRef_2.current.slideinLeft(dataurl);
-      this.active = 2;
+      this.setState({ active: 2 });
     } else {
       this.imageRef_1.current.slideinLeft(dataurl);
       this.imageRef_2.current.slideoutRight();
-      this.active = 1;
+      this.setState({ active: 1 });
     }
   };
 
@@ -346,14 +346,14 @@ class ModalViewer extends React.Component {
 
       // call child functions
       // switch
-      if (this.active === 1) {
+      if (this.state.active === 1) {
         this.imageRef_1.current.fadeout();
         this.imageRef_2.current.fadein(dataurl);
-        this.active = 2;
+        this.setState({ active: 2 });
       } else {
         this.imageRef_1.current.fadein(dataurl);
         this.imageRef_2.current.fadeout();
-        this.active = 1;
+        this.setState({ active: 1 });
       }
     }, interval);
   };
