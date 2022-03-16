@@ -193,13 +193,13 @@ class ModalViewer extends React.Component {
   }
 
   componentDidMount() {
-    window.addEventListener('mousemove', this.showController);
-    window.addEventListener('mousedown', this.showController);
+    //window.addEventListener('mousemove', this.showController);
+    //window.addEventListener('mousedown', this.showController);
   }
 
   componentDidUnMount() {
-    window.removeEventListener('mousemove', this.showController);
-    window.removeEventListener('mousedown', this.showController);
+    //window.removeEventListener('mousemove', this.showController);
+    //window.removeEventListener('mousedown', this.showController);
   }
 
   showController = () => {
@@ -213,6 +213,10 @@ class ModalViewer extends React.Component {
 
   doVisible = (index) => {
     console.log('doVisible', index);
+
+    window.addEventListener('mousemove', this.showController);
+    window.addEventListener('mousedown', this.showController);
+
     this.setState({ imageIndex: index });
 
     this.bgRef.current.style.visibility = 'visible';
@@ -235,6 +239,10 @@ class ModalViewer extends React.Component {
 
   doHidden = () => {
     console.log('doHidden');
+
+    window.removeEventListener('mousemove', this.showController);
+    window.removeEventListener('mousedown', this.showController);
+
     this.bgRef.current.style.opacity = 0;
     this.bgRef.current.style.transition = 'opacity 0.3s';
     setTimeout((e) => {
@@ -294,7 +302,7 @@ class ModalViewer extends React.Component {
   };
 
   handlePlay = () => {
-    if (this.playInterval == null) {
+    if (this.playInterval === null) {
       this.playInterval = this._play();
     } else {
       this._stop(this.playInterval);
@@ -429,32 +437,40 @@ class ModalViewerPanel extends React.Component {
   }
 
   render() {
-    if (this.props.files == null || this.props.files.length === 0) {
+    if (
+      this.props.files === undefined ||
+      this.props.files === null ||
+      this.props.files.length === 0
+    ) {
       return null;
     } else {
       let table = [];
       const file = this.props.files[this.props.index];
-      table = Object.keys(file.info).map((key) => {
-        const list = [];
-        if (key === 'lastModified') {
-          const d = new Date(file.info[key]);
-          const value = d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
-          list.push(
-            <tr>
-              <td>{key}</td>
-              <td>{value}</td>
-            </tr>
-          );
-        } else {
-          list.push(
-            <tr>
-              <td>{key}</td>
-              <td>{file.info[key]}</td>
-            </tr>
-          );
-        }
-        return list;
-      });
+      if (file === undefined || file === null) {
+        return null;
+      } else {
+        table = Object.keys(file.info).map((key) => {
+          const list = [];
+          if (key === 'lastModified') {
+            const d = new Date(file.info[key]);
+            const value = d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
+            list.push(
+              <tr>
+                <td>{key}</td>
+                <td>{value}</td>
+              </tr>
+            );
+          } else {
+            list.push(
+              <tr>
+                <td>{key}</td>
+                <td>{file.info[key]}</td>
+              </tr>
+            );
+          }
+          return list;
+        });
+      }
 
       return (
         <table border="1" className="modalviewer-panel">
