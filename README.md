@@ -1,10 +1,15 @@
-# Slide View
+# slideview
 
-シンプルな画像サムネイル+スライドショーです。(今はローカルファイルのみ対応)
+Simple image thumbnail + slide show. (Currently only supports local files)
 
-React の勉強のためライブラリ等は使わず素の class component で実装しています。
+For studying React. Using [Create React App](https://github.com/facebook/create-react-app).
 
-[Create React App](https://github.com/facebook/create-react-app) を使用しています。
+## Starting React App
+
+    $ git clone https://github.com/ysan/slideview.git
+    $ cd slideview
+    $ npm ci
+    $ npm start
 
 ## Features
 
@@ -14,19 +19,12 @@ React の勉強のためライブラリ等は使わず素の class component で
 - [ ] thmbnail sort
 - [x] modal view
 - [x] modal view next/prev
-- [x] modal view slide show
+- [x] modal slide show
 
-## Starting React App
+## Tasks
 
-    $ git clone https://github.com/ysan/slideview.git
-    $ cd slideview
-    $ npm install
-    $ npm start
-
-## others
-
-- レスポンシブ対応したい。
-- hooks 試したい。
-- Redux 試したい。
-- styled-components も試したい。
-- Pinterest 連携してみたい。
+- Responsive
+- Hooks
+- Redux
+- Styled-components, emotion
+- Link to Pinterest
