@@ -1,4 +1,4 @@
-import './SlideView.css';
+import './slideview.css';
 import React from 'react';
 
 export class Main extends React.Component {

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import * as SlideView from './SlideView.js';
+import * as SlideView from './slideview.js';
 
 ReactDOM.render(
   <React.StrictMode>
