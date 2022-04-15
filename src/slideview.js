@@ -5,10 +5,12 @@ export class Main extends React.Component {
   constructor(props) {
     super(props);
     this.state = { files: [] };
+    this.updateFiles = [];
   }
 
   onClearFiles = () => {
     this.setState({ files: [] });
+    this.updateFiles = [];
   };
 
   onUpdatingFiles = (dataurl, file) => {
@@ -22,9 +24,11 @@ export class Main extends React.Component {
         lastModified: file.lastModified,
       },
     };
-    const newFiles = this.state.files;
-    newFiles.push(_file);
-    const sorted = newFiles.sort((a, b) => {
+    this.updateFiles.push(_file);
+  };
+
+  onUpdatedFiles = () => {
+    const sorted = this.updateFiles.sort((a, b) => {
       if (a.info.name < b.info.name) {
         return -1;
       } else if (a.info.name > b.info.name) {
@@ -34,10 +38,8 @@ export class Main extends React.Component {
       }
     });
     this.setState({ files: sorted });
-    console.log(this.state.files.length);
+    console.log('files', this.state.files.length);
   };
-
-  onUpdatedFiles = () => {};
 
   onUpdateWidthHeight = (index, width, height) => {
     const newFiles = this.state.files;
@@ -66,6 +68,19 @@ class DirectorySelector extends React.Component {
     //this.handleInputChange = this.handleInputChange.bind(this);
   }
 
+  readAsDataURL = (file) => {
+    return new Promise((resolve, reject) => {
+      let reader = new FileReader();
+      reader.onload = () => {
+        resolve(reader.result);
+      };
+      reader.onerror = () => {
+        reject(reader.error);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
   getFileLoadCallback = (file) => {
     return (e) => {
       // for each file callback
@@ -80,7 +95,7 @@ class DirectorySelector extends React.Component {
     };
   };
 
-  handleInputChange = (e) => {
+  handleInputChange = async (e) => {
     this.props.handleInputBegin();
 
     for (let i = 0; i < e.target.files.length; i++) {
@@ -94,9 +109,18 @@ class DirectorySelector extends React.Component {
         continue;
       }
 
-      let fileReader = new FileReader();
-      fileReader.onload = this.getFileLoadCallback(file);
-      fileReader.readAsDataURL(file);
+      //let fileReader = new FileReader();
+      //fileReader.onload = this.getFileLoadCallback(file);
+      //fileReader.readAsDataURL(file);
+      const result = await this.readAsDataURL(file);
+      console.log(
+        //file.webkitRelativePath,
+        file.name,
+        file.type,
+        file.size,
+        file.lastModified
+      );
+      this.props.handleLoadFile(result, file);
     }
 
     this.props.handleInputEnd();
