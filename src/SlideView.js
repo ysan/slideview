@@ -24,7 +24,16 @@ export class Main extends React.Component {
     };
     const newFiles = this.state.files;
     newFiles.push(_file);
-    this.setState({ files: newFiles });
+    const sorted = newFiles.sort((a, b) => {
+      if (a.info.name < b.info.name) {
+        return -1;
+      } else if (a.info.name > b.info.name) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+    this.setState({ files: sorted });
     console.log(this.state.files.length);
   };
 
