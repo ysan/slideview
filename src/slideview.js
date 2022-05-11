@@ -15,14 +15,14 @@ export class Main extends React.Component {
 
   onUpdatingFiles = (dataurl, file) => {
     const _file = {
-      dataurl: dataurl,
+      dataurl,
       info: {
-        //path: file.webkitRelativePath,
+        // path: file.webkitRelativePath,
         name: file.name,
         type: file.type,
         size: file.size,
-        lastModified: file.lastModified,
-      },
+        lastModified: file.lastModified
+      }
     };
     this.updateFiles.push(_file);
   };
@@ -70,7 +70,7 @@ class DirectorySelector extends React.Component {
 
   readAsDataURL = (file) => {
     return new Promise((resolve, reject) => {
-      let reader = new FileReader();
+      const reader = new FileReader();
       reader.onload = () => {
         resolve(reader.result);
       };
@@ -85,7 +85,7 @@ class DirectorySelector extends React.Component {
     return (e) => {
       // for each file callback
       console.log(
-        //file.webkitRelativePath,
+        // file.webkitRelativePath,
         file.name,
         file.type,
         file.size,
@@ -99,8 +99,8 @@ class DirectorySelector extends React.Component {
     this.props.handleInputBegin();
 
     for (let i = 0; i < e.target.files.length; i++) {
-      let file = e.target.files[i];
-      //console.log(file.webkitRelativePath, file.name, file.type, file.size);
+      const file = e.target.files[i];
+      // console.log(file.webkitRelativePath, file.name, file.type, file.size);
       if (
         file.type !== 'image/jpeg' &&
         file.type !== 'image/png' &&
@@ -109,12 +109,12 @@ class DirectorySelector extends React.Component {
         continue;
       }
 
-      //let fileReader = new FileReader();
-      //fileReader.onload = this.getFileLoadCallback(file);
-      //fileReader.readAsDataURL(file);
+      // let fileReader = new FileReader();
+      // fileReader.onload = this.getFileLoadCallback(file);
+      // fileReader.readAsDataURL(file);
       const result = await this.readAsDataURL(file);
       console.log(
-        //file.webkitRelativePath,
+        // file.webkitRelativePath,
         file.name,
         file.type,
         file.size,
@@ -145,7 +145,7 @@ class DirectorySelector extends React.Component {
 class Thmbnailer extends React.Component {
   constructor(props) {
     super(props);
-    //this.handleClick = this.handleClick.bind(this);
+    // this.handleClick = this.handleClick.bind(this);
     this.modalViewerRef = React.createRef();
   }
 
@@ -158,7 +158,7 @@ class Thmbnailer extends React.Component {
     this.modalViewerRef.current.doVisible(imgIndex);
   };
 
-  onCloseViewer = (e) => {
+  onCloseViewer = () => {
     console.log('close viewer');
   };
 
@@ -203,7 +203,7 @@ class ModalViewer extends React.Component {
       imageIndex: 0,
       active: 0, // 1 or 2 - imageRef_1 or imageRef_2
       playButton: 'Play',
-      currentXY: { x: 0, y: 0 },
+      currentXY: { x: 0, y: 0 }
     };
 
     this.bgRef = React.createRef();
@@ -221,18 +221,18 @@ class ModalViewer extends React.Component {
       { value: 15, text: '15sec' },
       { value: 30, text: '30sec' },
       { value: 60, text: '1min' },
-      { value: 300, text: '5min' },
+      { value: 300, text: '5min' }
     ];
   }
 
   componentDidMount() {
-    //window.addEventListener('mousemove', this.showController);
-    //window.addEventListener('mousedown', this.showController);
+    // window.addEventListener('mousemove', this.showController);
+    // window.addEventListener('mousedown', this.showController);
   }
 
   componentDidUnMount() {
-    //window.removeEventListener('mousemove', this.showController);
-    //window.removeEventListener('mousedown', this.showController);
+    // window.removeEventListener('mousemove', this.showController);
+    // window.removeEventListener('mousedown', this.showController);
   }
 
   showController = () => {
@@ -278,7 +278,7 @@ class ModalViewer extends React.Component {
 
     this.bgRef.current.style.opacity = 0;
     this.bgRef.current.style.transition = 'opacity 0.3s';
-    setTimeout((e) => {
+    setTimeout(() => {
       this.bgRef.current.style.visibility = 'hidden';
     }, 500);
   };
@@ -346,7 +346,7 @@ class ModalViewer extends React.Component {
   _play = () => {
     this.controllerPartialRef.current.style.transition = 'opacity 0.3s';
     this.controllerPartialRef.current.style.opacity = 0;
-    this.playAndHiddenTimeout = setTimeout((e) => {
+    this.playAndHiddenTimeout = setTimeout(() => {
       this.controllerPartialRef.current.style.visibility = 'hidden';
     }, 500);
 
