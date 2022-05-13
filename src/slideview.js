@@ -51,7 +51,7 @@ export class Main extends React.Component {
   render() {
     return (
       <div>
-        <DirectorySelector
+        <OpenFiles
           handleInputBegin={this.onClearFiles}
           handleLoadFile={this.onUpdatingFiles}
           handleInputEnd={this.onUpdatedFiles}
@@ -62,10 +62,23 @@ export class Main extends React.Component {
   }
 }
 
-class DirectorySelector extends React.Component {
+function promisedSleep(timeMS) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, timeMS);
+  });
+}
+
+class OpenFiles extends React.Component {
   constructor(props) {
     super(props);
-    //this.handleInputChange = this.handleInputChange.bind(this);
+    this.STATE_INIT = 0;
+    this.STATE_OPENED = 1;
+    this.STATE_FINISHED = 2;
+
+    this.state = { _state: this.STATE_INIT };
+    this.loadingBarRef = React.createRef();
   }
 
   readAsDataURL = (file) => {
@@ -96,6 +109,8 @@ class DirectorySelector extends React.Component {
   };
 
   handleInputChange = async (e) => {
+    this.setState({ _state: this.STATE_OPENED });
+
     this.props.handleInputBegin();
 
     for (let i = 0; i < e.target.files.length; i++) {
@@ -121,23 +136,59 @@ class DirectorySelector extends React.Component {
         file.lastModified
       );
       this.props.handleLoadFile(result, file);
+
+      // await promisedSleep(150); // debug
+      this.loadingBarRef.current.setProgress(i, e.target.files.length);
     }
 
     this.props.handleInputEnd();
+    this.loadingBarRef.current.setProgress(1, 1);
+
+    this.setState({ _state: this.STATE_FINISHED });
+  };
+
+  render() {
+    let elem = null;
+    if (this.state._state === this.STATE_INIT) {
+      elem = (
+        <label className="openfiles">
+          open files
+          <input
+            id="file"
+            type="file"
+            multiple
+            onChange={this.handleInputChange}
+            style={{ display: 'none' }}
+          ></input>
+        </label>
+      );
+    } else if (this.state._state === this.STATE_OPENED) {
+      elem = <LoadingBar ref={this.loadingBarRef} />;
+    } else {
+      elem = null;
+    }
+
+    return <>{elem}</>;
+  }
+}
+
+class LoadingBar extends React.Component {
+  constructor(props) {
+    super(props);
+    this.ref = React.createRef();
+  }
+
+  setProgress = (current, total) => {
+    const percentage = (current / total) * 100;
+    console.log(percentage);
+    this.ref.current.style.width = `${percentage}%`;
   };
 
   render() {
     return (
-      <label id="open_directory">
-        open directory
-        <input
-          id="file"
-          type="file"
-          webkitdirectory="ture"
-          onChange={this.handleInputChange}
-          style={{ display: 'none' }}
-        ></input>
-      </label>
+      <div className="loadingbar">
+        <div ref={this.ref}></div>
+      </div>
     );
   }
 }
@@ -217,6 +268,7 @@ class ModalViewer extends React.Component {
     this.playInterval = null;
     this.playIntervalOptions = [
       { value: 1, text: '1sec' },
+      { value: 3, text: '3sec' },
       { value: 10, text: '10sec' },
       { value: 15, text: '15sec' },
       { value: 30, text: '30sec' },
@@ -429,7 +481,7 @@ class ModalViewer extends React.Component {
             <select
               className="modalviewer-btn modalviewer-playinterval"
               ref={this.playIntervalRef}
-              defaultValue={this.playIntervalOptions[1].value}
+              defaultValue={this.playIntervalOptions[2].value}
             >
               {this.playIntervalOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
