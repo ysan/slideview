@@ -1,8 +1,10 @@
 # slideview
 
-Simple image thumbnail + slide show. (Currently only supports local files)
-
+Simple image thumbnailer + slideshow. (Currently only supports local image files.)  
+  
 For studying React. Using [Create React App](https://github.com/facebook/create-react-app).
+
+![demo](https://github.com/ysan/slideview/blob/master/etc/demo.gif)
 
 ## Starting React App
 
@@ -10,16 +12,6 @@ For studying React. Using [Create React App](https://github.com/facebook/create-
     $ cd slideview
     $ npm ci
     $ npm start
-
-## Features
-
-- [x] local directory select open
-- [ ] local files select open
-- [x] thmbnail view
-- [ ] thmbnail sort
-- [x] modal view
-- [x] modal view next/prev
-- [x] modal slide show
 
 ## Tasks
 
