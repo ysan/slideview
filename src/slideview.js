@@ -25,19 +25,10 @@ export class Main extends React.Component {
       }
     };
     this.updateFiles.push(_file);
+    this.setState({ files: this.updateFiles });
   };
 
   onUpdatedFiles = () => {
-    const sorted = this.updateFiles.sort((a, b) => {
-      if (a.info.name < b.info.name) {
-        return -1;
-      } else if (a.info.name > b.info.name) {
-        return 1;
-      } else {
-        return 0;
-      }
-    });
-    this.setState({ files: sorted });
     console.log('files', this.state.files.length);
   };
 
@@ -111,10 +102,21 @@ class OpenFiles extends React.Component {
   handleInputChange = async (e) => {
     this.setState({ _state: this.STATE_OPENED });
 
+    // sort by filename
+    const sorted = [...e.target.files].sort((a, b) => {
+      if (a.name < b.name) {
+        return -1;
+      } else if (a.name > b.name) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+
     this.props.handleInputBegin();
 
-    for (let i = 0; i < e.target.files.length; i++) {
-      const file = e.target.files[i];
+    for (let i = 0; i < sorted.length; i++) {
+      const file = sorted[i];
       // console.log(file.webkitRelativePath, file.name, file.type, file.size);
       if (
         file.type !== 'image/jpeg' &&
