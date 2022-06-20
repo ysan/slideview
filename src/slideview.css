@@ -198,6 +198,11 @@
   align-items: center;
 }
 
+.modalviewer-img-original {
+  width: auto;
+  height: auto;
+}
+
 .modalviewer-img-fixX {
   width: 100%;
   height: auto;
