@@ -118,13 +118,13 @@ class OpenFiles extends React.Component {
     for (let i = 0; i < sorted.length; i++) {
       const file = sorted[i];
       // console.log(file.webkitRelativePath, file.name, file.type, file.size);
-      if (
-        file.type !== 'image/jpeg' &&
-        file.type !== 'image/png' &&
-        file.type !== 'image/bmp'
-      ) {
-        continue;
-      }
+      // if (
+      //   file.type !== 'image/jpeg' &&
+      //   file.type !== 'image/png' &&
+      //   file.type !== 'image/bmp'
+      // ) {
+      //   continue;
+      // }
 
       // let fileReader = new FileReader();
       // fileReader.onload = this.getFileLoadCallback(file);
@@ -154,13 +154,14 @@ class OpenFiles extends React.Component {
     if (this.state._state === this.STATE_INIT) {
       elem = (
         <label className="openfiles">
-          open files
+          Open files
           <input
             id="file"
             type="file"
             multiple
             onChange={this.handleInputChange}
             style={{ display: 'none' }}
+            accept="image/jpeg, image/png, image/bmp"
           ></input>
         </label>
       );
@@ -586,8 +587,7 @@ class ModalViewerImage extends React.Component {
     this.frameRef = React.createRef();
     this.imageRef = React.createRef();
     this.state = { imageDataURL: null };
-    this.imageWidth = 0;
-    this.imageHeight = 0;
+    this.imageInfo = { width: 0, height: 0 };
   }
 
   componentDidMount() {
@@ -609,20 +609,27 @@ class ModalViewerImage extends React.Component {
   };
 
   resize = () => {
-    this.setImageSize(this.imageWidth, this.imageHeight);
+    this.setImageSize(this.imageInfo.width, this.imageInfo.height);
+  };
+
+  removeClass = (name) => {
+    if (this.imageRef.current.classList.contains(name)) {
+      this.imageRef.current.classList.remove(name);
+    }
   };
 
   setImageSize = (imageWidth, imageHeight) => {
     // reset
-    if (this.imageRef.current.classList.contains('modalviewer-img-original')) {
-      this.imageRef.current.classList.remove('modalviewer-img-original');
-    }
-    if (this.imageRef.current.classList.contains('modalviewer-img-fixX')) {
-      this.imageRef.current.classList.remove('modalviewer-img-fixX');
-    }
-    if (this.imageRef.current.classList.contains('modalviewer-img-fixY')) {
-      this.imageRef.current.classList.remove('modalviewer-img-fixY');
-    }
+    this.removeClass('modalviewer-img-original');
+    this.removeClass('modalviewer-img-fixX');
+    this.removeClass('modalviewer-img-fixY');
+
+    console.log(
+      'frame_x:',
+      this.frameRef.current.clientWidth,
+      'frame_y:',
+      this.frameRef.current.clientHeight
+    );
 
     const qw = imageWidth / this.frameRef.current.clientWidth;
     const qh = imageHeight / this.frameRef.current.clientHeight;
@@ -643,52 +650,56 @@ class ModalViewerImage extends React.Component {
     }
   };
 
-  checkImageXYSize = (dataurl, callback) => {
-    const img = new Image();
-    img.src = dataurl;
-    img.onload = (e) => {
-      console.log('img_x:', e.target.width, 'img_y:', e.target.height);
-      console.log(
-        'frame_x:',
-        this.frameRef.current.clientWidth,
-        'frame_y:',
-        this.frameRef.current.clientHeight
-      );
-
-      this.imageWidth = e.target.width;
-      this.imageHeight = e.target.height;
-
-      this.props.handleUpdateImageXY(e.target.width, e.target.height);
-
-      // reset
-      this.imageRef.current.className = '';
-
-      this.setImageSize(e.target.width, e.target.height);
-
-      if (callback) {
-        callback();
-      }
-    };
-  };
-
-  slideinRight = (dataurl) => {
-    //    clearTimeout(this.timeoutRef);
-    this.setState({ imageDataURL: dataurl });
-
-    this.checkImageXYSize(dataurl, () => {
-      // set slidein animation
-      this.imageRef.current.classList.add('modalviewer-img-slidein-right');
+  promisedLoadImage = (dataurl) => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = dataurl;
+      img.onload = (e) => {
+        resolve(e.target);
+      };
+      img.onerror = () => {
+        reject(new Error('load error'));
+      };
     });
   };
 
-  slideinLeft = (dataurl) => {
+  checkImageXYSize = async (dataurl) => {
+    const r = await this.promisedLoadImage(dataurl);
+    if (r instanceof Error) {
+      console.log(r.toString());
+      return;
+    }
+
+    console.log('img_x:', r.width, 'img_y:', r.height);
+    this.imageInfo.width = r.width;
+    this.imageInfo.height = r.height;
+
+    this.props.handleUpdateImageXY(r.width, r.height);
+
+    // reset class
+    this.imageRef.current.className = '';
+
+    this.setImageSize(r.width, r.height);
+  };
+
+  slideinRight = async (dataurl) => {
+    // clearTimeout(this.timeoutRef);
+    this.setState({ imageDataURL: dataurl });
+
+    await this.checkImageXYSize(dataurl);
+
+    // set slidein animation
+    this.imageRef.current.classList.add('modalviewer-img-slidein-right');
+  };
+
+  slideinLeft = async (dataurl) => {
     //    clearTimeout(this.timeoutRef);
     this.setState({ imageDataURL: dataurl });
 
-    this.checkImageXYSize(dataurl, () => {
-      // set slidein animation
-      this.imageRef.current.classList.add('modalviewer-img-slidein-left');
-    });
+    await this.checkImageXYSize(dataurl);
+
+    // set slidein animation
+    this.imageRef.current.classList.add('modalviewer-img-slidein-left');
   };
 
   slideoutRight = () => {
@@ -705,13 +716,13 @@ class ModalViewerImage extends React.Component {
     this.imageRef.current.classList.add('modalviewer-img-slideout-left');
   };
 
-  fadein = (dataurl) => {
+  fadein = async (dataurl) => {
     this.setState({ imageDataURL: dataurl });
 
-    this.checkImageXYSize(dataurl, () => {
-      // set fadein animation
-      this.imageRef.current.classList.add('modalviewer-img-fadein');
-    });
+    await this.checkImageXYSize(dataurl);
+
+    // set fadein animation
+    this.imageRef.current.classList.add('modalviewer-img-fadein');
   };
 
   fadeout = () => {
@@ -722,26 +733,14 @@ class ModalViewerImage extends React.Component {
   };
 
   removeSlideinClasses = () => {
-    if (
-      this.imageRef.current.classList.contains('modalviewer-img-slidein-left')
-    ) {
-      this.imageRef.current.classList.remove('modalviewer-img-slidein-left');
-    }
-
-    if (
-      this.imageRef.current.classList.contains('modalviewer-img-slidein-right')
-    ) {
-      this.imageRef.current.classList.remove('modalviewer-img-slidein-right');
-    }
-
-    if (this.imageRef.current.classList.contains('modalviewer-img-fadein')) {
-      this.imageRef.current.classList.remove('modalviewer-img-fadein');
-    }
+    this.removeClass('modalviewer-img-slidein-left');
+    this.removeClass('modalviewer-img-slidein-right');
+    this.removeClass('modalviewer-img-fadein');
   };
 
   render() {
     return (
-      <div className="modalviewer-inner" ref={this.frameRef}>
+      <div className="modalviewer-frame" ref={this.frameRef}>
         <img src={this.state.imageDataURL} alt="" ref={this.imageRef} />
       </div>
     );
