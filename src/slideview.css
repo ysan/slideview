@@ -189,7 +189,7 @@
   z-index: 20;
 }
 
-.modalviewer-inner {
+.modalviewer-frame {
   position: absolute;
   display: flex;
   justify-content: center;
