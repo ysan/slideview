@@ -64,11 +64,13 @@ function promisedSleep(timeMS) {
 class OpenFiles extends React.Component {
   constructor(props) {
     super(props);
-    this.STATE_INIT = 0;
-    this.STATE_OPENED = 1;
-    this.STATE_FINISHED = 2;
+    this.stateDef = {
+      INIT: 0,
+      OPENED: 1,
+      FINISHED: 2
+    };
 
-    this.state = { _state: this.STATE_INIT };
+    this.state = { _state: this.stateDef.INIT };
     this.loadingBarRef = React.createRef();
   }
 
@@ -100,7 +102,7 @@ class OpenFiles extends React.Component {
   };
 
   handleInputChange = async (e) => {
-    this.setState({ _state: this.STATE_OPENED });
+    this.setState({ _state: this.stateDef.OPENED });
 
     // sort by filename
     const sorted = [...e.target.files].sort((a, b) => {
@@ -146,12 +148,12 @@ class OpenFiles extends React.Component {
     this.props.handleInputEnd();
     this.loadingBarRef.current.setProgress(1, 1);
 
-    this.setState({ _state: this.STATE_FINISHED });
+    this.setState({ _state: this.stateDef.FINISHED });
   };
 
   render() {
     let elem = null;
-    if (this.state._state === this.STATE_INIT) {
+    if (this.state._state === this.stateDef.INIT) {
       elem = (
         <label className="openfiles">
           Open files
@@ -165,7 +167,7 @@ class OpenFiles extends React.Component {
           ></input>
         </label>
       );
-    } else if (this.state._state === this.STATE_OPENED) {
+    } else if (this.state._state === this.stateDef.OPENED) {
       elem = <LoadingBar ref={this.loadingBarRef} />;
     } else {
       elem = null;
@@ -469,18 +471,22 @@ class ModalViewer extends React.Component {
             >
               Close
             </button>
-            <button
-              className="modalviewer-btn modalviewer-next"
-              onClick={this.handleNext}
-            >
-              &gt;
-            </button>
-            <button
-              className="modalviewer-btn modalviewer-prev"
-              onClick={this.handlePrev}
-            >
-              &lt;
-            </button>
+            {this.state.imageIndex !== this.props.files.length - 1 && (
+              <button
+                className="modalviewer-btn modalviewer-next"
+                onClick={this.handleNext}
+              >
+                &gt;
+              </button>
+            )}
+            {this.state.imageIndex !== 0 && (
+              <button
+                className="modalviewer-btn modalviewer-prev"
+                onClick={this.handlePrev}
+              >
+                &lt;
+              </button>
+            )}
             <select
               className="modalviewer-btn modalviewer-playinterval"
               ref={this.playIntervalRef}
